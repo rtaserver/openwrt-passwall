@@ -173,7 +173,7 @@ if CHNROUTE_MODE_DEFAULT_DNS ~= "nil" then
 end
 
 if global and (not returnhome and not chnlist and not gfwlist) then
-	--只有全局模式时
+	--åªæœ‰å…¨å±€æ¨¡å¼æ—¶
 	dnsmasq_default_dns = TUN_DNS
 	only_global = 1
 end
@@ -185,14 +185,14 @@ if not fs.access(CACHE_DNS_PATH) then
 	fs.mkdir("/tmp/dnsmasq.d")
 	fs.mkdir(CACHE_DNS_PATH)
 
-	--屏蔽列表
+	--å±è”½åˆ—è¡¨
 	for line in io.lines("/usr/share/passwall/rules/block_host") do
 		if line ~= "" and not line:find("#") then
 			set_domain_address(line, "")
 		end
 	end
 
-	--始终用国内DNS解析节点域名
+	--å§‹ç»ˆç”¨å›½å†…DNSè§£æžèŠ‚ç‚¹åŸŸå
 	uci:foreach(appname, "nodes", function(t)
 		local address = t.address
 		if datatypes.hostname(address) then
@@ -200,9 +200,9 @@ if not fs.access(CACHE_DNS_PATH) then
 			set_domain_ipset(address, setflag_4 .. "passwall_vpslist," .. setflag_6 .. "passwall_vpslist6")
 		end
 	end)
-	log(string.format("  - 节点列表中的域名(vpslist)：%s", LOCAL_DNS or "默认"))
+	log(string.format("- Domain name in node list (vpslist): %s", LOCAL_DNS or "Default"))
 
-	--始终用国内DNS解析直连（白名单）列表
+	--å§‹ç»ˆç”¨å›½å†…DNSè§£æžç›´è¿žï¼ˆç™½åå•ï¼‰åˆ—è¡¨
 	for line in io.lines("/usr/share/passwall/rules/direct_host") do
 		if line ~= "" and not line:find("#") then
 			add_excluded_domain(line)
@@ -210,13 +210,13 @@ if not fs.access(CACHE_DNS_PATH) then
 			set_domain_ipset(line, setflag_4 .. "passwall_whitelist," .. setflag_6 .. "passwall_whitelist6")
 		end
 	end
-	log(string.format("  - 域名白名单(whitelist)：%s", LOCAL_DNS or "默认"))
+	log(string.format("- Domain name whitelist (whitelist): %s", LOCAL_DNS or "Default"))
 
 	local fwd_dns
 	local ipset_flag
 	local no_ipv6
 
-	--始终使用远程DNS解析代理（黑名单）列表
+	--å§‹ç»ˆä½¿ç”¨è¿œç¨‹DNSè§£æžä»£ç†ï¼ˆé»‘åå•ï¼‰åˆ—è¡¨
 	for line in io.lines("/usr/share/passwall/rules/proxy_host") do
 		if line ~= "" and not line:find("#") then
 			add_excluded_domain(line)
@@ -232,9 +232,9 @@ if not fs.access(CACHE_DNS_PATH) then
 			set_domain_ipset(line, ipset_flag)
 		end
 	end
-	log(string.format("  - 代理域名表(blacklist)：%s", TUN_DNS or "默认"))
+	log(string.format("- Proxy domain name list (blacklist): %s", TUN_DNS or "default"))
 
-	--分流规则
+	--åˆ†æµè§„åˆ™
 	if uci:get(appname, TCP_NODE, "protocol") == "_shunt" then
 		local t = uci:get_all(appname, TCP_NODE)
 		local default_node_id = t["default_node"] or "_direct"
@@ -282,15 +282,15 @@ if not fs.access(CACHE_DNS_PATH) then
 					end
 				end
 				if _node_id ~= "_direct" then
-					log(string.format("  - V2ray/Xray分流规则(%s)：%s", s.remarks, fwd_dns or "默认"))
+					log(string.format("- V2ray/Xray diversion rule (%s): %s", s.remarks, fwd_dns or "default"))
 				end
 			end
 		end)
 	elseif only_global == 1 and NO_PROXY_IPV6 == "1" then
-		--节点：固定节点
-		--代理模式：全局模式
-		--过滤代理域名 IPv6：启用
-		--禁止解析所有IPv6记录
+		--èŠ‚ç‚¹ï¼šå›ºå®šèŠ‚ç‚¹
+		--ä»£ç†æ¨¡å¼ï¼šå…¨å±€æ¨¡å¼
+		--è¿‡æ»¤ä»£ç†åŸŸå IPv6ï¼šå¯ç”¨
+		--ç¦æ­¢è§£æžæ‰€æœ‰IPv6è®°å½•
 		list1["#"] = {
 			dns = {},
 			ipsets = {},
@@ -299,7 +299,7 @@ if not fs.access(CACHE_DNS_PATH) then
 	end
 
 	if not only_global then
-		--如果没有使用回国模式
+		--å¦‚æžœæ²¡æœ‰ä½¿ç”¨å›žå›½æ¨¡å¼
 		if not returnhome then
 			if fs.access("/usr/share/passwall/rules/gfwlist") then
 				fwd_dns = TUN_DNS
@@ -324,7 +324,7 @@ if not fs.access(CACHE_DNS_PATH) then
 						end
 					end
 				end
-				log(string.format("  - 防火墙域名表(gfwlist)：%s", fwd_dns or "默认"))
+				log(string.format("- Firewall domain name list (gfwlist): %s", fwd_dns or "default"))
 			end
 
 			if chnlist and fs.access("/usr/share/passwall/rules/chnlist") and (CHNROUTE_MODE_DEFAULT_DNS == "remote" or (CHNROUTE_MODE_DEFAULT_DNS == "chinadns_ng" and CHINADNS_DNS ~= "0")) then
@@ -340,7 +340,7 @@ if not fs.access(CACHE_DNS_PATH) then
 						end
 					end
 				end
-				log(string.format("  - 中国域名表(chnroute)：%s", fwd_dns or "默认"))
+				log(string.format("- China domain name table (chnroute): %s", fwd_dns or "default"))
 			end
 		else
 			if fs.access("/usr/share/passwall/rules/chnlist") then
@@ -359,7 +359,7 @@ if not fs.access(CACHE_DNS_PATH) then
 						set_domain_ipset(line, ipset_flag)
 					end
 				end
-				log(string.format("  - 中国域名表(chnroute)：%s", TUN_DNS or "默认"))
+				log(string.format("- China domain name table (chnroute): %s", TUN_DNS or "default"))
 			end
 		end
 	end
@@ -418,7 +418,7 @@ if DNSMASQ_CONF_FILE ~= "nil" then
 		conf_out:write("no-poll\n")
 		conf_out:write("no-resolv\n")
 		conf_out:close()
-		log(string.format("  - 以上所列以外及默认：%s", dnsmasq_default_dns))
+		log(string.format("- Other than those listed above and default: %s", dnsmasq_default_dns))
 
 		if FLAG == "default" then
 			local f_out = io.open("/tmp/etc/passwall/default_DNS", "a")
@@ -428,4 +428,4 @@ if DNSMASQ_CONF_FILE ~= "nil" then
 	end
 end
 
-log("  - PassWall必须依赖于Dnsmasq，如果你自行配置了错误的DNS流程，将会导致域名(直连/代理域名)分流失效！！！")
+log("- PassWall must rely on Dnsmasq. If you configure the wrong DNS process yourself, it will cause the domain name (direct/proxy domain name) diversion to fail!!!")

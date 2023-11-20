@@ -82,7 +82,7 @@ test_auto_switch() {
 		if [ -f "${f}" ]; then
 			now_node=$(cat ${f})
 		else
-			#echolog "自动切换检测：未知错误"
+			#echolog "è‡ªåŠ¨åˆ‡æ¢æ£€æµ‹ï¼šæœªçŸ¥é”™è¯¯"
 			return 1
 		fi
 	}
@@ -93,37 +93,37 @@ test_auto_switch() {
 
 	status=$(test_proxy)
 	if [ "$status" == 2 ]; then
-		echolog "自动切换检测：无法连接到网络，请检查网络是否正常！"
+		echolog "Automatic switching detection: Unable to connect to the network, please check whether the network is normal!"
 		return 2
 	fi
 	
-	#检测主节点是否能使用
+	#æ£€æµ‹ä¸»èŠ‚ç‚¹æ˜¯å¦èƒ½ä½¿ç”¨
 	if [ "$restore_switch" == "1" ] && [ "$main_node" != "nil" ] && [ "$now_node" != "$main_node" ]; then
 		test_node ${main_node}
 		[ $? -eq 0 ] && {
-			#主节点正常，切换到主节点
-			echolog "自动切换检测：${id}主节点【$(config_n_get $main_node type)：[$(config_n_get $main_node remarks)]】正常，切换到主节点！"
+			#ä¸»èŠ‚ç‚¹æ­£å¸¸ï¼Œåˆ‡æ¢åˆ°ä¸»èŠ‚ç‚¹
+			echolog "Automatic switching detection: ${id} main node [$(config_n_get $main_node type): [$(config_n_get $main_node remarks)]] is normal, switch to the main node!"
 			/usr/share/${CONFIG}/app.sh socks_node_switch flag=${id} new_node=${main_node}
 			[ $? -eq 0 ] && {
-				echolog "自动切换检测：${id}节点切换完毕！"
+				echolog "Automatic switching detection: ${id} node switching completed!"
 			}
 			return 0
 		}
 	fi
 	
 	if [ "$status" == 0 ]; then
-		#echolog "自动切换检测：${id}【$(config_n_get $now_node type)：[$(config_n_get $now_node remarks)]】正常。"
+		#echolog "è‡ªåŠ¨åˆ‡æ¢æ£€æµ‹ï¼š${id}ã€$(config_n_get $now_node type)ï¼š[$(config_n_get $now_node remarks)]ã€‘æ­£å¸¸ã€‚"
 		return 0
 	elif [ "$status" == 1 ]; then
-		echolog "自动切换检测：${id}【$(config_n_get $now_node type)：[$(config_n_get $now_node remarks)]】异常，切换到下一个备用节点检测！"
+		echolog "Automatic switching detection: ${id}[$(config_n_get $now_node type):[$(config_n_get $now_node remarks)]] is abnormal, switch to the next backup node detection!"
 		local new_node
 		in_backup_nodes=$(echo $b_nodes | grep $now_node)
-		# 判断当前节点是否存在于备用节点列表里
+		# åˆ¤æ–­å½“å‰èŠ‚ç‚¹æ˜¯å¦å­˜åœ¨äºŽå¤‡ç”¨èŠ‚ç‚¹åˆ—è¡¨é‡Œ
 		if [ -z "$in_backup_nodes" ]; then
-			# 如果不存在，设置第一个节点为新的节点
+			# å¦‚æžœä¸å­˜åœ¨ï¼Œè®¾ç½®ç¬¬ä¸€ä¸ªèŠ‚ç‚¹ä¸ºæ–°çš„èŠ‚ç‚¹
 			new_node=$(echo $b_nodes | awk -F ' ' '{print $1}')
 		else
-			# 如果存在，设置下一个备用节点为新的节点
+			# å¦‚æžœå­˜åœ¨ï¼Œè®¾ç½®ä¸‹ä¸€ä¸ªå¤‡ç”¨èŠ‚ç‚¹ä¸ºæ–°çš„èŠ‚ç‚¹
 			#local count=$(expr $(echo $b_nodes | grep -o ' ' | wc -l) + 1)
 			local next_node=$(echo $b_nodes | awk -F "$now_node" '{print $2}' | awk -F " " '{print $1}')
 			if [ -z "$next_node" ]; then
@@ -139,10 +139,10 @@ test_auto_switch() {
 				[ -z "$(echo $b_nodes | grep $main_node)" ] && uci add_list $CONFIG.${id}.autoswitch_backup_node=$main_node
 				uci commit $CONFIG
 			}
-			echolog "自动切换检测：${id}【$(config_n_get $new_node type)：[$(config_n_get $new_node remarks)]】正常，切换到此节点！"
+			echolog "Automatic switching detection: ${id}[$(config_n_get $new_node type): [$(config_n_get $new_node remarks)]] is normal, switch to this node!"
 			/usr/share/${CONFIG}/app.sh socks_node_switch flag=${id} new_node=${new_node}
 			[ $? -eq 0 ] && {
-				echolog "自动切换检测：${id}节点切换完毕！"
+				echolog "Automatic switching detection: ${id} node switching completed!"
 			}
 			return 0
 		else
