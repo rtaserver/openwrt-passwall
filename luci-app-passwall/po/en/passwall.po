@@ -1,0 +1,396 @@
+msgid "Pass Wall"
+msgstr "PassWall"
+
+msgid "$tables透明代理基础依赖 $depends 未安装..."
+msgstr "$tables transparent proxy base dependency $depends is not installed..."
+
+msgid "没有执行权限，无法启动："
+msgstr "Unable to start without execution permission:"
+
+msgid "找不到 ${ln_name}，无法启动..."
+msgstr "${ln_name} not found, unable to start..."
+
+msgid "记录到持久性日志文件：${log_file}"
+msgstr "Logging to persistent log file: ${log_file}"
+
+msgid "记录 ${ln_name}_${protocol} 到系统日志"
+msgstr "Log ${ln_name}_${protocol} to the system log"
+
+msgid "- Socks节点：[$remarks]${server_host} 是非法的服务器地址，无法启动！"
+msgstr "- Socks node: [$remarks]${server_host} is an illegal server address and cannot be started!"
+
+msgid "某种原因，此 Socks 服务的相关配置已失联，启动中止！"
+msgstr "For some reason, the relevant configuration of this Socks service has been lost and the startup was aborted!"
+
+msgid "- Socks节点：[$remarks]${tmp}，启动中止 ${bind}:${socks_port} ${error_msg}"
+msgstr "- Socks node: [$remarks]${tmp}, startup aborted ${bind}:${socks_port} ${error_msg}"
+
+msgid "- Socks节点：[$remarks]${tmp}，启动 ${bind}:${socks_port}"
+msgstr "- Socks node: [$remarks]${tmp}, start ${bind}:${socks_port}"
+
+msgid "${PROTO}节点：[$remarks]${server_host} 是非法的服务器地址，无法启动！"
+msgstr "${PROTO} node: [$remarks]${server_host} is an illegal server address and cannot be started!"
+
+msgid "${PROTO}节点：[$remarks]，监听端口：$local_port"
+msgstr "${PROTO} node: [$remarks], listening port: $local_port"
+
+msgid "Naiveproxy不支持UDP转发！"
+msgstr "Naiveproxy does not support UDP forwarding!"
+
+msgid "TUIC不支持UDP转发！"
+msgstr "TUIC does not support UDP forwarding!"
+
+msgid "开启实验性IPv6透明代理(TProxy)，请确认您的节点及类型支持IPv6！"
+msgstr "Turn on the experimental IPv6 transparent proxy (TProxy). Please confirm that your node and type support IPv6!"
+
+msgid "${proto}节点没有选择或为空，不代理${proto}。"
+msgstr "The ${proto} node is not selected or empty, and does not proxy ${proto}."
+
+msgid "分析 Socks 服务的节点配置..."
+msgstr "Analyze the node configuration of the Socks service..."
+
+msgid "日志文件过长，清空处理！"
+msgstr "The log file is too long, please clear it!"
+
+msgid "配置定时任务：每天 $time_off 点关闭服务。"
+msgstr "Configure a scheduled task: shut down the service at $time_off every day."
+
+msgid "配置定时任务：每天 $time_on 点开启服务。"
+msgstr "Configure scheduled tasks: start the service at $time_on every day."
+
+msgid "配置定时任务：每天 $time_restart 点重启服务。"
+msgstr "Configure scheduled tasks: restart the service at $time_restart point every day."
+
+msgid "配置定时任务：自动更新规则。"
+msgstr "Configure scheduled tasks: automatic update rules."
+
+msgid "配置定时任务：自动更新【$remark】订阅。"
+msgstr "Configure scheduled tasks: automatically update [$remark] subscription."
+
+msgid "运行于非代理模式，仅允许服务启停的定时任务。"
+msgstr "Runs in non-agent mode and only allows scheduled tasks to start and stop services."
+
+msgid "DNS域名解析："
+msgstr "DNS domain name resolution:"
+
+msgid "* 请确认上游 DNS 支持 TCP 查询，如非直连地址，确保 TCP 代理打开，并且已经正确转发！"
+msgstr "* Please confirm that the upstream DNS supports TCP query. If the address is not directly connected, make sure the TCP proxy is turned on and forwarded correctly!"
+
+msgid "* 请确认上游 DNS 支持 UDP 查询并已使用 UDP 节点，如上游 DNS 非直连地址，确保 UDP 代理打开，并且已经正确转发！"
+msgstr "* Please confirm that the upstream DNS supports UDP query and has used UDP nodes, such as the upstream DNS indirect address, ensure that the UDP proxy is turned on and has been forwarded correctly!"
+
+msgid "- ChinaDNS-NG(${china_ng_listen})：直连DNS：$(echo -n $(echo "${LOCAL_DNS}" | sed "s/,/\n/g" | head -n2) | tr " " ",")，可信DNS：${china_ng_trust_dns}"
+msgstr "- ChinaDNS-NG(${china_ng_listen}): Directly connected DNS: $(echo -n $(echo "${LOCAL_DNS}" | sed "s/,/\n/g" | head -n2) | tr " " ","), trusted DNS: ${china_ng_trust_dns}"
+
+msgid "Dnsmasq版本低于2.87，有可能无法正常使用！！！"
+msgstr "Dnsmasq version is lower than 2.87 and may not work properly! ! !"
+
+msgid "- 无法解析[${1}]，路由表添加失败！"
+msgstr "- Unable to parse [${1}], routing table addition failed!"
+
+msgid "- [${remarks}]添加到接口[${device}]路由表成功！"
+msgstr "- [${remarks}] was added to the routing table of interface [${device}] successfully!"
+
+msgid "- [${remarks}]添加到接口[${device}]路由表失功！原因是找不到[${device}]网关。"
+msgstr "- [${remarks}] added to the routing table of interface [${device}] failed! The reason is that the [${device}] gateway cannot be found."
+
+msgid "Dnsmasq版本低于2.87，有可能无法正常使用！！！"
+msgstr "Dnsmasq version is lower than 2.87 and may not work properly! ! !"
+
+msgid "系统未安装iptables或ipset或Dnsmasq没有开启ipset支持，无法使用iptables+ipset透明代理！"
+msgstr "The system does not have iptables or ipset installed or Dnsmasq does not have ipset support enabled, so iptables+ipset transparent proxy cannot be used!"
+
+msgid "检测到fw4，使用nftables进行透明代理。"
+msgstr "fw4 detected, using nftables for transparent proxying."
+
+msgid "Dnsmasq软件包不满足nftables透明代理要求，如需使用请确保dnsmasq版本在2.87以上并开启nftset支持。"
+msgstr "The Dnsmasq software package does not meet the transparent proxy requirements of nftables. If you want to use it, please ensure that the dnsmasq version is above 2.87 and enable nftset support."
+
+msgid "Dnsmasq版本低于2.90，建议升级至2.90及以上版本以避免部分情况下Dnsmasq崩溃问题！"
+msgstr "The Dnsmasq version is lower than 2.90. It is recommended to upgrade to 2.90 or above to avoid Dnsmasq crash problem in some cases!"
+
+msgid "运行完成！\n"
+msgstr "Run complete! \n"
+
+msgid "清空并关闭相关程序和缓存完成。"
+msgstr "Clear and close related programs and cache to complete."
+
+msgid "HAPROXY 负载均衡："
+msgstr "HAPROXY load balancing:"
+
+msgid "* 控制台端口：%s"
+msgstr "* console port: %s"
+
+msgid "- 丢弃1个明显无效的节点"
+msgstr "- Discard 1 obviously invalid node"
+
+msgid "+  入口 %s:%s" % {bind_address, port}"
+msgstr "+ Entry %s:%s" % {bind_address, port}"
+
+msgid "- 出口节点：%s:%s，权重：%s"
+msgstr "- Exit node: %s:%s, weight: %s"
+
+msgid "重启 dnsmasq 服务"
+msgstr "Restart the dnsmasq service"
+
+msgid "- 节点列表中的域名(vpslist)：%s", LOCAL_DNS or "默认""
+msgstr "- Domain name in the node list (vpslist): %s", LOCAL_DNS or "default""
+
+msgid "- 域名白名单(whitelist)：%s", fwd_dns or "默认""
+msgstr "- Domain name whitelist (whitelist): %s", fwd_dns or "default""
+
+msgid "- 代理域名表(blacklist)：%s", fwd_dns or "默认""
+msgstr "- Proxy domain name list (blacklist): %s", fwd_dns or "default""
+
+msgid "- 防火墙域名表(gfwlist)：%s", fwd_dns or "默认""
+msgstr "- Firewall domain name table (gfwlist): %s", fwd_dns or "default""
+
+msgid "- 中国域名表(chnroute)：%s", fwd_dns or "默认""
+msgstr "- China domain name table (chnroute): %s", fwd_dns or "default""
+
+msgid "- V2ray/Xray分流规则(%s)：%s", s.remarks, fwd_dns or "默认""
+msgstr "- V2ray/Xray diversion rules (%s): %s", s.remarks, fwd_dns or "default""
+
+msgid "- 默认：%s"
+msgstr "- Default: %s"
+
+msgid "- PassWall必须依赖于Dnsmasq，如果你自行配置了错误的DNS流程，将会导致域名(直连/代理域名)分流失效！！！"
+msgstr "- PassWall must rely on Dnsmasq. If you configure the wrong DNS process yourself, the domain name (direct/proxy domain name) diversion will fail! ! !"
+
+msgid "索引列举方式不正确（iptables），终止执行！"
+msgstr "The index enumeration method is incorrect (iptables), execution is terminated!"
+
+msgid "- 访问控制："
+msgstr "- Access control:"
+
+msgid "- ${msg}不代理 TCP 端口[${tcp_no_redir_ports}]"
+msgstr "- ${msg} does not proxy TCP ports [${tcp_no_redir_ports}]"
+
+msgid "- ${msg}不代理所有 TCP 端口"
+msgstr "- ${msg} does not proxy all TCP ports"
+
+msgid "- ${msg}不代理 UDP 端口[${udp_no_redir_ports}]"
+msgstr "- ${msg} does not proxy UDP ports [${udp_no_redir_ports}]"
+
+msgid "- ${msg}不代理所有 UDP 端口"
+msgstr "- ${msg} does not proxy all UDP ports"
+
+msgid "- ${msg}屏蔽代理 TCP 端口[${tcp_proxy_drop_ports}]"
+msgstr "- ${msg}Block proxy TCP ports [${tcp_proxy_drop_ports}]"
+
+msgid "- ${msg}屏蔽代理 UDP 端口[${udp_proxy_drop_ports}]"
+msgstr "- ${msg}Block proxy UDP ports [${udp_proxy_drop_ports}]"
+
+msgid "${msg}使用 TCP 节点[$tcp_node_remark]"
+msgstr "${msg}Use TCP node [$tcp_node_remark]"
+
+msgid "${msg}不代理 TCP"
+msgstr "${msg} does not proxy TCP"
+
+msgid "${msg}使用 UDP 节点[$udp_node_remark]"
+msgstr "${msg}Use UDP node [$udp_node_remark]"
+
+msgid "${msg}不代理 UDP"
+msgstr "${msg} does not proxy UDP"
+
+msgid "【默认】"
+msgstr "【default】"
+
+msgid "默认"
+msgstr "default"
+
+msgid "不代理 TCP 端口"
+msgstr "Do not proxy TCP ports"
+
+msgid "不代理所有 TCP 端口"
+msgstr "Do not proxy all TCP ports"
+
+msgid "不代理 UDP 端口"
+msgstr "Do not proxy UDP ports"
+
+msgid "不代理所有 UDP 端口"
+msgstr "Do not proxy all UDP ports"
+
+msgid "屏蔽代理 TCP 端口"
+msgstr "Block proxy TCP port"
+
+msgid "屏蔽代理 UDP 端口"
+msgstr "Block proxy UDP port"
+
+msgid "使用 TCP 节点"
+msgstr "Using TCP nodes"
+
+msgid "使用 UDP 节点"
+msgstr "Use UDP node"
+
+msgid "- [$?]加入负载均衡的节点到ipset[$IPSET_VPSLIST]"
+msgstr "- [$?]Add load balancing nodes to ipset[$IPSET_VPSLIST]"
+
+msgid "- [$?]加入所有节点到ipset[$IPSET_VPSLIST]"
+msgstr "- [$?]Add all nodes to ipset[$IPSET_VPSLIST]"
+
+msgid "- 节点配置不正常，略过"
+msgstr "- The node configuration is abnormal, skip it"
+
+msgid "按规则路由"
+msgstr "Routing by rules"
+
+msgid "套娃使用"
+msgstr "Use of matryoshka dolls"
+
+msgid "直连代理"
+msgstr "direct agent"
+
+msgid "已配置过的节点，"
+msgstr "Configured nodes,"
+
+msgid "[$?]$(echo ${2} | tr 'a-z' 'A-Z')${msg2}使用链${ADD_INDEX}，节点（${type}）：${address}:${port}"
+msgstr "[$?]$(echo ${2} | tr 'a-z' 'A-Z')${msg2} uses chain ${ADD_INDEX}, node (${type}): ${address}:${port}"
+
+msgid "- 节点配置不正常，略过！"
+msgstr "- The node configuration is abnormal, skip it!"
+
+msgid "强制转发本机DNS端口 UDP/53 的请求[$?]"
+msgstr "Forcibly forward requests to the local DNS port UDP/53[$?]"
+
+msgid "开始加载防火墙规则..."
+msgstr "Starting to load firewall rules..."
+
+msgid "【路由器本机】，"
+msgstr "[Router native],"
+
+msgid "- ${msg}不代理所有 TCP 端口"
+msgstr "- ${msg} does not proxy all TCP ports"
+
+msgid "不代理 UDP 端口"
+msgstr "Do not proxy UDP ports"
+
+msgid "不代理所有 UDP 端口"
+msgstr "Do not proxy all UDP ports"
+
+msgid "屏蔽代理 TCP 端口"
+msgstr "Block proxy TCP port"
+
+msgid "屏蔽代理 UDP 端口"
+msgstr "Block proxy UDP port"
+
+msgid "- 上游 DNS 服务器 ${2} 已在直接访问的列表中，不强制向 TCP 代理转发对该服务器 TCP/${3} 端口的访问"
+msgstr "- The upstream DNS server ${2} is already in the list for direct access, and access to the server's TCP/${3} port is not forced to be forwarded to the TCP proxy."
+
+msgid "本机"
+msgstr "local machine"
+
+msgid "- [$?]将上游 DNS 服务器 ${2}:${3} 加入到路由器自身代理的 TCP 转发链"
+msgstr "- [$?]Add the upstream DNS server ${2}:${3} to the TCP forwarding chain of the router's own proxy"
+
+msgid "- 上游 DNS 服务器 ${2} 已在直接访问的列表中，不强制向 UDP 代理转发对该服务器 UDP/${3} 端口的访问"
+msgstr "- The upstream DNS server ${2} is already in the list for direct access, and access to the UDP/${3} port of this server is not forced to be forwarded to the UDP proxy."
+
+msgid "- [$?]将上游 DNS 服务器 ${2}:${3} 加入到路由器自身代理的 UDP 转发链"
+msgstr "- [$?]Add the upstream DNS server ${2}:${3} to the UDP forwarding chain of the router's own proxy"
+
+msgid "防火墙规则加载完成！"
+msgstr "Firewall rules are loaded!"
+
+msgid "删除iptables防火墙规则完成。"
+msgstr "Deletion of iptables firewall rules is completed."
+
+msgid "清空 IPSET。"
+msgstr "Clear IPSET."
+
+msgid "索引列举方式不正确（nftables），终止执行！"
+msgstr "The index enumeration method is incorrect (nftables), execution is terminated!"
+
+msgid "- [$?]追加直连DNS到nftables：${dns_address}:${dns_port:-53}"
+msgstr "- [$?]Append direct DNS to nftables: ${dns_address}:${dns_port:-53}"
+
+msgid "删除nftables防火墙规则完成。"
+msgstr "Deletion of nftables firewall rules is complete."
+
+msgid "清空 NFTSET。"
+msgstr "Clear NFTSET."
+
+msgid "下载文件大小校验出错，原始文件大小" .. remote_file_size .. "B，下载文件大小：" .. local_file_size .. "B。"
+msgstr "There is an error in the download file size verification. The original file size is ".. remote_file_size .. "B. The download file size is: ".. local_file_size .. "B."
+
+msgid "下载文件读取出错。"
+msgstr "There was an error reading the download file."
+
+msgid " 开始更新..."
+msgstr "Start Update..."
+
+msgid " 第" ..k.. "条规则:" ..v.. "下载文件过程出错，尝试重新下载。"
+msgstr "Rule " ..k.. ": " ..v.. " An error occurred while downloading the file, try downloading again."
+
+msgid " 第" ..k.. "条规则:" ..v.. "下载文件过程出错，请检查网络或下载链接后重试！"
+msgstr "Rule " ..k.. ": " ..v.. " An error occurred while downloading the file, please check the network or download link and try again!"
+
+msgid " 第" ..k.. "条规则:" ..v.. "下载失败，请检查网络或下载链接后重试！"
+msgstr "Rule " ..k.. ": " ..v.. " Download failed, please check the network or download link and try again!"
+
+msgid "更新成功，总规则数 " ..count.. " 条。"
+msgstr "The update is successful, the total number of rules is " ..count.. "."
+
+msgid "版本一致，无需更新。"
+msgstr "The version is consistent and no update is required."
+
+msgid "文件下载失败！"
+msgstr "File download failed!"
+
+msgid "geoip 版本一致，无需更新。"
+msgstr "The geoip version is consistent and does not need to be updated."
+
+msgid "geoip 更新成功。"
+msgstr "geoip update successful."
+
+msgid "geoip 更新失败，请稍后再试。"
+msgstr "geoip update failed, please try again later."
+
+msgid "geosite 版本一致，无需更新。"
+msgstr "The geosite version is consistent and does not need to be updated."
+
+msgid "geosite 更新成功。"
+msgstr "geosite updated successfully."
+
+msgid "geosite 更新失败，请稍后再试。"
+msgstr "Geosite update failed, please try again later."
+
+msgid "更新gfwlist发生错误..."
+msgstr "An error occurred while updating gfwlist..."
+
+msgid "更新chnroute发生错误..."
+msgstr "An error occurred while updating chnroute..."
+
+msgid "更新chnroute6发生错误..."
+msgstr "An error occurred while updating chnroute6..."
+
+msgid "更新chnlist发生错误..."
+msgstr "An error occurred while updating chnlist..."
+
+msgid "geoip 开始更新..."
+msgstr "geoip starts updating..."
+
+msgid "geosite 开始更新..."
+msgstr "geosite starts updating..."
+
+msgid "重启服务，应用新的规则。"
+msgstr "Restart the service and apply the new rules."
+
+msgid "规则更新完毕..."
+msgstr "Rules updated..."
+
+msgid "自动切换检测：无法连接到网络，请检查网络是否正常！"
+msgstr "Automatic switching detection: Unable to connect to the network, please check whether the network is normal!"
+
+msgid "自动切换检测：${id}主节点【$(config_n_get $main_node type)：[$(config_n_get $main_node remarks)]】正常，切换到主节点！"
+msgstr "Automatic switching detection: ${id} main node [$(config_n_get $main_node type): [$(config_n_get $main_node remarks)]] is normal, switch to the main node!"
+
+msgid "自动切换检测：${id}节点切换完毕！"
+msgstr ""
+
+msgid "自动切换检测：${id}【$(config_n_get $now_node type)：[$(config_n_get $now_node remarks)]】异常，切换到下一个备用节点检测！"
+msgstr ""
+
+msgid "自动切换检测：${id}【$(config_n_get $new_node type)：[$(config_n_get $new_node remarks)]】正常，切换到此节点！"
+msgstr ""
+
