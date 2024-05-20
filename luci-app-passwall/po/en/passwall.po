@@ -386,11 +386,11 @@ msgid "自动切换检测：${id}主节点【$(config_n_get $main_node type)：[
 msgstr "Automatic switching detection: ${id} main node [$(config_n_get $main_node type): [$(config_n_get $main_node remarks)]] is normal, switch to the main node!"
 
 msgid "自动切换检测：${id}节点切换完毕！"
-msgstr ""
+msgstr "Automatic switching detection: ${id} node switching completed!"
 
 msgid "自动切换检测：${id}【$(config_n_get $now_node type)：[$(config_n_get $now_node remarks)]】异常，切换到下一个备用节点检测！"
-msgstr ""
+msgstr "Automatic switching detection: ${id}[$(config_n_get $now_node type):[$(config_n_get $now_node remarks)]] is abnormal, switch to the next backup node detection!"
 
 msgid "自动切换检测：${id}【$(config_n_get $new_node type)：[$(config_n_get $new_node remarks)]】正常，切换到此节点！"
-msgstr ""
+msgstr "Automatic switching detection: ${id}[$(config_n_get $new_node type): [$(config_n_get $new_node remarks)]] Normal, switch to this node!"
 
