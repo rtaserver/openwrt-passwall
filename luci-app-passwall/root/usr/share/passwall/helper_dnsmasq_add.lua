@@ -202,20 +202,15 @@ if not fs.access(CACHE_DNS_PATH) then
 	end
 
 	--始终用国内DNS解析节点域名
-	if true then
-		if USE_DEFAULT_DNS == "chinadns_ng" and CHINADNS_DNS ~= "0" then
-		else
-			uci:foreach(appname, "nodes", function(t)
-				local address = t.address
-				if address == "engage.cloudflareclient.com" then return end
-				if datatypes.hostname(address) then
-					set_domain_dns(address, LOCAL_DNS)
-					set_domain_ipset(address, setflag_4 .. "passwall_vpslist," .. setflag_6 .. "passwall_vpslist6")
-				end
-			end)
+	uci:foreach(appname, "nodes", function(t)
+		local address = t.address
+		if address == "engage.cloudflareclient.com" then return end
+		if datatypes.hostname(address) then
+			set_domain_dns(address, LOCAL_DNS)
+			set_domain_ipset(address, setflag_4 .. "passwall_vpslist," .. setflag_6 .. "passwall_vpslist6")
 		end
-		log(string.format("  - 节点列表中的域名(vpslist)：%s", LOCAL_DNS or "默认"))
-	end
+	end)
+	log(string.format("- Domain name in node list (vpslist): %s", LOCAL_DNS or "Default"))
 
 	local fwd_dns
 	local ipset_flag
@@ -238,7 +233,7 @@ if not fs.access(CACHE_DNS_PATH) then
 					end
 				end
 			end
-			log(string.format("  - 域名白名单(whitelist)：%s", fwd_dns or "默认"))
+			log(string.format("- Domain name whitelist (whitelist): %s", fwd_dns or "default"))
 		end
 	end
 
@@ -267,7 +262,7 @@ if not fs.access(CACHE_DNS_PATH) then
 					end
 				end
 			end
-			log(string.format("  - 代理域名表(blacklist)：%s", fwd_dns or "默认"))
+			log(string.format("- Proxy domain name list (blacklist): %s", fwd_dns or "default"))
 		end
 	end
 
@@ -301,7 +296,7 @@ if not fs.access(CACHE_DNS_PATH) then
 					end
 				end
 			end
-			log(string.format("  - 防火墙域名表(gfwlist)：%s", fwd_dns or "默认"))
+			log(string.format("- Firewall domain name list (gfwlist): %s", fwd_dns or "default"))
 		end
 	end
 
@@ -343,7 +338,7 @@ if not fs.access(CACHE_DNS_PATH) then
 					end
 				end
 			end
-			log(string.format("  - 中国域名表(chnroute)：%s", fwd_dns or "默认"))
+			log(string.format("- China domain name table (chnroute): %s", fwd_dns or "default"))
 		end
 	end
 
@@ -395,7 +390,7 @@ if not fs.access(CACHE_DNS_PATH) then
 					end
 				end
 				if _node_id ~= "_direct" then
-					log(string.format("  - V2ray/Xray分流规则(%s)：%s", s.remarks, fwd_dns or "默认"))
+					log(string.format("- V2ray/Xray diversion rule (%s): %s", s.remarks, fwd_dns or "default"))
 				end
 			end
 		end)
@@ -411,40 +406,38 @@ if not fs.access(CACHE_DNS_PATH) then
 		}
 	end
 
-	if list1 and next(list1) then
-		local address_out = io.open(CACHE_DNS_PATH .. "/000-address.conf", "a")
-		local server_out = io.open(CACHE_DNS_PATH .. "/001-server.conf", "a")
-		local ipset_out = io.open(CACHE_DNS_PATH .. "/ipset.conf", "a")
-		local set_name = "ipset"
-		if NFTFLAG == "1" then
-			set_name = "nftset"
-		end
-		for key, value in pairs(list1) do
-			if value.address then
-				local domain = "." .. key
-				if key == "#" then
-					domain = key
-				end
-				address_out:write(string.format("address=/%s/%s\n", domain, value.address))
-			end
-			if value.dns and #value.dns > 0 then
-				for i, dns in ipairs(value.dns) do
-					server_out:write(string.format("server=/.%s/%s\n", key, dns))
-				end
-			end
-			if value.ipsets and #value.ipsets > 0 then
-				local ipsets_str = ""
-				for i, ipset in ipairs(value.ipsets) do
-					ipsets_str = ipsets_str .. ipset .. ","
-				end
-				ipsets_str = ipsets_str:sub(1, #ipsets_str - 1)
-				ipset_out:write(string.format("%s=/.%s/%s\n", set_name, key, ipsets_str))
-			end
-		end
-		address_out:close()
-		server_out:close()
-		ipset_out:close()
+	local address_out = io.open(CACHE_DNS_PATH .. "/000-address.conf", "a")
+	local server_out = io.open(CACHE_DNS_PATH .. "/001-server.conf", "a")
+	local ipset_out = io.open(CACHE_DNS_PATH .. "/ipset.conf", "a")
+	local set_name = "ipset"
+	if NFTFLAG == "1" then
+		set_name = "nftset"
 	end
+	for key, value in pairs(list1) do
+		if value.address then
+			local domain = "." .. key
+			if key == "#" then
+				domain = key
+			end
+			address_out:write(string.format("address=/%s/%s\n", domain, value.address))
+		end
+		if value.dns and #value.dns > 0 then
+			for i, dns in ipairs(value.dns) do
+				server_out:write(string.format("server=/.%s/%s\n", key, dns))
+			end
+		end
+		if value.ipsets and #value.ipsets > 0 then
+			local ipsets_str = ""
+			for i, ipset in ipairs(value.ipsets) do
+				ipsets_str = ipsets_str .. ipset .. ","
+			end
+			ipsets_str = ipsets_str:sub(1, #ipsets_str - 1)
+			ipset_out:write(string.format("%s=/.%s/%s\n", set_name, key, ipsets_str))
+		end
+	end
+	address_out:close()
+	server_out:close()
+	ipset_out:close()
 
 	local f_out = io.open(CACHE_TEXT_FILE, "a")
 	f_out:write(new_text)
@@ -469,7 +462,7 @@ if DNSMASQ_CONF_FILE ~= "nil" then
 		conf_out:write("no-poll\n")
 		conf_out:write("no-resolv\n")
 		conf_out:close()
-		log(string.format("  - 默认：%s", dnsmasq_default_dns))
+		log(string.format("- Default: %s", dnsmasq_default_dns))
 
 		if FLAG == "default" then
 			local f_out = io.open("/tmp/etc/passwall/default_DNS", "a")
@@ -479,4 +472,4 @@ if DNSMASQ_CONF_FILE ~= "nil" then
 	end
 end
 
-log("  - PassWall必须依赖于Dnsmasq，如果你自行配置了错误的DNS流程，将会导致域名(直连/代理域名)分流失效！！！")
+log("- PassWall must rely on Dnsmasq. If you configure the wrong DNS process yourself, it will cause the domain name (direct/proxy domain name) diversion to fail!!!")

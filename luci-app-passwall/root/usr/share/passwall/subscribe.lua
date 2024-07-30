@@ -34,8 +34,6 @@ local trojan_type_default = uci:get(appname, "@global_subscribe[0]", "trojan_typ
 local vmess_type_default = uci:get(appname, "@global_subscribe[0]", "vmess_type") or "xray"
 local vless_type_default = uci:get(appname, "@global_subscribe[0]", "vless_type") or "xray"
 local hysteria2_type_default = uci:get(appname, "@global_subscribe[0]", "hysteria2_type") or "hysteria2"
-local domain_strategy_default = uci:get(appname, "@global_subscribe[0]", "domain_strategy") or ""
-local domain_strategy_node = ""
 -- 判断是否过滤节点关键字
 local filter_keyword_mode_default = uci:get(appname, "@global_subscribe[0]", "filter_keyword_mode") or "0"
 local filter_keyword_discard_list_default = uci:get(appname, "@global_subscribe[0]", "filter_discard_list") or {}
@@ -128,7 +126,7 @@ do
 			CONFIG[#CONFIG + 1] = {
 				log = true,
 				id = t[".name"],
-				remarks = "Socks节点列表[" .. i .. "]",
+				remarks = "Socks node list[" .. i .. "]",
 				currentNode = node_id and uci:get_all(appname, node_id) or nil,
 				set = function(o, server)
 					uci:set(appname, t[".name"], option, server)
@@ -150,7 +148,7 @@ do
 			CONFIG[#CONFIG + 1] = {
 				log = true,
 				id = t[".name"],
-				remarks = "HAProxy负载均衡节点列表[" .. i .. "]",
+				remarks = "HAProxy load balancing node list[" .. i .. "]",
 				currentNode = node_id and uci:get_all(appname, node_id) or nil,
 				set = function(o, server)
 					uci:set(appname, t[".name"], option, server)
@@ -174,7 +172,7 @@ do
 				CONFIG[#CONFIG + 1] = {
 					log = true,
 					id = t[".name"],
-					remarks = "访问控制列表[" .. i .. "]",
+					remarks = "Access Control List[" .. i .. "]",
 					currentNode = node_id and uci:get_all(appname, node_id) or nil,
 					set = function(o, server)
 						uci:set(appname, t[".name"], option, server)
@@ -200,11 +198,11 @@ do
 						end
 						nodes[#nodes + 1] = {
 							log = true,
-							remarks = "Socks[" .. id .. "]备用节点的列表[" .. k .. "]",
+							remarks = "Socks[" .. id .. "]List of alternate nodes[" .. k .. "]",
 							currentNode = currentNode,
 							set = function(o, server)
 								for kk, vv in pairs(CONFIG) do
-									if (vv.remarks == id .. "备用节点的列表") then
+									if (vv.remarks == id .. "List of backup nodes") then
 										table.insert(vv.new_nodes, server)
 									end
 								end
@@ -214,12 +212,12 @@ do
 				end
 			end
 			CONFIG[#CONFIG + 1] = {
-				remarks = id .. "备用节点的列表",
+				remarks = id .. "List of backup nodes",
 				nodes = nodes,
 				new_nodes = new_nodes,
 				set = function(o)
 					for kk, vv in pairs(CONFIG) do
-						if (vv.remarks == id .. "备用节点的列表") then
+						if (vv.remarks == id .. "List of backup nodes") then
 							uci:set_list(appname, id, "autoswitch_backup_node", vv.new_nodes)
 						end
 					end
@@ -239,11 +237,11 @@ do
 			end)
 			table.insert(rules, {
 				[".name"] = "default_node",
-				remarks = "默认"
+				remarks = "Default"
 			})
 			table.insert(rules, {
 				[".name"] = "main_node",
-				remarks = "默认前置"
+				remarks = "Default prefix"
 			})
 
 			for k, e in pairs(rules) do
@@ -253,7 +251,7 @@ do
 					CONFIG[#CONFIG + 1] = {
 						log = false,
 						currentNode = _node_id and uci:get_all(appname, _node_id) or nil,
-						remarks = "分流" .. e.remarks .. "节点",
+						remarks = "Diversion" .. e.remarks .. "Node",
 						set = function(o, server)
 							if not server then server = "nil" end
 							uci:set(appname, node_id, e[".name"], server)
@@ -274,7 +272,7 @@ do
 						remarks = node,
 						set = function(o, server)
 							for kk, vv in pairs(CONFIG) do
-								if (vv.remarks == "Xray负载均衡节点[" .. node_id .. "]列表") then
+								if (vv.remarks == "Xray load balancing node[" .. node_id .. "] list") then
 									table.insert(vv.new_nodes, server)
 								end
 							end
@@ -283,12 +281,12 @@ do
 				end
 			end
 			CONFIG[#CONFIG + 1] = {
-				remarks = "Xray负载均衡节点[" .. node_id .. "]列表",
+				remarks = "Xray load balancing node[" .. node_id .. "] list",
 				nodes = nodes,
 				new_nodes = new_nodes,
 				set = function(o)
 					for kk, vv in pairs(CONFIG) do
-						if (vv.remarks == "Xray负载均衡节点[" .. node_id .. "]列表") then
+						if (vv.remarks == "Xray load balancing node[" .. node_id .. "] list") then
 							uci:foreach(appname, "nodes", function(node2)
 								if node2[".name"] == node[".name"] then
 									local section = uci:section(appname, "nodes", node_id)
@@ -306,7 +304,7 @@ do
 				CONFIG[#CONFIG + 1] = {
 					log = true,
 					id = node_id,
-					remarks = "Xray负载均衡节点[" .. node_id .. "]后备节点",
+					remarks = "Xray load balancing node[" .. node_id .. "]backup node",
 					currentNode = uci:get_all(appname, currentNode.fallback_node) or nil,
 					set = function(o, server)
 						uci:set(appname, node_id, "fallback_node", server)
@@ -324,7 +322,7 @@ do
 				CONFIG[#CONFIG + 1] = {
 					log = true,
 					id = node_id,
-					remarks = "节点[" .. node_id .. "]落地节点",
+					remarks = "Node[" .. node_id .. "] landing node",
 					currentNode = uci:get_all(appname, currentNode.to_node) or nil,
 					set = function(o, server)
 						uci:set(appname, node_id, "to_node", server)
@@ -596,7 +594,7 @@ local function processData(szType, content, add_mode, add_from)
 			if result.plugin then
 				if result.type == 'Xray' then
 					--不支持插件
-					result.error_msg = "Xray不支持插件."
+					result.error_msg = "Xray does not support plug-ins."
 				end
 				if result.type == "sing-box" then
 					result.plugin_enabled = "1"
@@ -613,7 +611,7 @@ local function processData(szType, content, add_mode, add_from)
 				end
 				if aead2022 then
 					-- shadowsocks-libev 不支持2022加密
-					result.error_msg = "shadowsocks-libev 不支持2022加密."
+					result.error_msg = "shadowsocks-libev does not support 2022 encryption."
 				end
 			end
 		end
@@ -822,7 +820,7 @@ local function processData(szType, content, add_mode, add_from)
 		end
 		result.remarks = UrlDecode(alias)
 		
-		local dat = split(content:gsub("/%?", "?"), '%?')
+		local dat = split(content, '%?')
 		local host_port = dat[1]
 		local params = {}
 		for _, v in pairs(split(dat[2], '&')) do
@@ -923,7 +921,7 @@ local function processData(szType, content, add_mode, add_from)
 			end
 		end
 	else
-		log('暂时不支持' .. szType .. "类型的节点订阅，跳过此节点。")
+		log('Not currently supported' .. szType .. "Node subscription of type, skip this node.")
 		return nil
 	end
 	if not result.remarks or result.remarks == "" then
@@ -991,7 +989,7 @@ local function select_node(nodes, config)
 		if config.currentNode[".name"] then
 			for index, node in pairs(nodes) do
 				if node[".name"] == config.currentNode[".name"] then
-					log('更新【' .. config.remarks .. '】匹配节点：' .. node.remarks)
+					log('Update [' .. config.remarks .. '] matching node: ' .. node.remarks)
 					server = node[".name"]
 					break
 				end
@@ -1004,7 +1002,7 @@ local function select_node(nodes, config)
 					if node.type and node.remarks and node.address and node.port then
 						if node.type == config.currentNode.type and node.remarks == config.currentNode.remarks and (node.address .. ':' .. node.port == config.currentNode.address .. ':' .. config.currentNode.port) then
 							if config.log == nil or config.log == true then
-								log('更新【' .. config.remarks .. '】第一匹配节点：' .. node.remarks)
+								log('Update [' .. config.remarks .. '] first matching node: ' .. node.remarks)
 							end
 							server = node[".name"]
 							break
@@ -1020,7 +1018,7 @@ local function select_node(nodes, config)
 					if node.type and node.address and node.port then
 						if node.type == config.currentNode.type and (node.address .. ':' .. node.port == config.currentNode.address .. ':' .. config.currentNode.port) then
 							if config.log == nil or config.log == true then
-								log('更新【' .. config.remarks .. '】第二匹配节点：' .. node.remarks)
+								log('Update [' .. config.remarks .. '] second matching node: ' .. node.remarks)
 							end
 							server = node[".name"]
 							break
@@ -1036,7 +1034,7 @@ local function select_node(nodes, config)
 					if node.address and node.port then
 						if node.address .. ':' .. node.port == config.currentNode.address .. ':' .. config.currentNode.port then
 							if config.log == nil or config.log == true then
-								log('更新【' .. config.remarks .. '】第三匹配节点：' .. node.remarks)
+								log('Update [' .. config.remarks .. '] third matching node: ' .. node.remarks)
 							end
 							server = node[".name"]
 							break
@@ -1052,7 +1050,7 @@ local function select_node(nodes, config)
 					if node.address then
 						if node.address == config.currentNode.address then
 							if config.log == nil or config.log == true then
-								log('更新【' .. config.remarks .. '】第四匹配节点：' .. node.remarks)
+								log('Update [' .. config.remarks .. '] fourth matching node: ' .. node.remarks)
 							end
 							server = node[".name"]
 							break
@@ -1068,7 +1066,7 @@ local function select_node(nodes, config)
 					if node.remarks then
 						if node.remarks == config.currentNode.remarks then
 							if config.log == nil or config.log == true then
-								log('更新【' .. config.remarks .. '】第五匹配节点：' .. node.remarks)
+								log('Update [' .. config.remarks .. '] fifth matching node: ' .. node.remarks)
 							end
 							server = node[".name"]
 							break
@@ -1087,7 +1085,7 @@ local function select_node(nodes, config)
 			end
 			if #nodes_table > 0 then
 				if config.log == nil or config.log == true then
-					log('【' .. config.remarks .. '】' .. '无法找到最匹配的节点，当前已更换为：' .. nodes_table[1].remarks)
+					log('[' .. config.remarks .. ']' .. 'Unable to find the most matching node, it has been replaced by:' .. nodes_table[1].remarks)
 				end
 				server = nodes_table[1][".name"]
 			end
@@ -1102,7 +1100,7 @@ end
 
 local function update_node(manual)
 	if next(nodeResult) == nil then
-		log("更新失败，没有可用的节点信息")
+		log("Update failed, no node information available")
 		return
 	end
 
@@ -1126,10 +1124,6 @@ local function update_node(manual)
 			local cfgid = uci:section(appname, "nodes", api.gen_short_uuid())
 			for kkk, vvv in pairs(vv) do
 				uci:set(appname, cfgid, kkk, vvv)
-				-- sing-box 域名解析策略
-				if kkk == "type" and vvv == "sing-box" then
-					uci:set(appname, cfgid, "domain_strategy", domain_strategy_node)
-				end
 			end
 		end
 	end
@@ -1228,24 +1222,24 @@ local function parse_link(raw, add_mode, add_from)
 							end
 						end
 					else
-						log('跳过未知类型: ' .. szType)
+						log('Skip unknown type: ' .. szType)
 					end
 					-- log(result)
 					if result then
 						if result.error_msg then
-							log('丢弃节点: ' .. result.remarks .. ", 原因:" .. result.error_msg)
+							log('Discarded node: ' .. result.remarks .. ", reason: " .. result.error_msg)
 						elseif not result.type then
-							log('丢弃节点: ' .. result.remarks .. ", 找不到可使用二进制.")
+							log('Discarded node: ' .. result.remarks .. ", binary not found.")
 						elseif (add_mode == "2" and is_filter_keyword(result.remarks)) or not result.address or result.remarks == "NULL" or result.address == "127.0.0.1" or
 								(not datatypes.hostname(result.address) and not (api.is_ip(result.address))) then
-							log('丢弃过滤节点: ' .. result.type .. ' 节点, ' .. result.remarks)
+							log('Discard filter node: ' .. result.type .. ' node, ' .. result.remarks)
 						else
 							tinsert(node_list, result)
 						end
 					end
 				end, function (err)
 					--log(err)
-					log(v, "解析错误，跳过此节点。")
+					log(v, "Parse error, skip this node.")
 				end
 			)
 			end
@@ -1256,10 +1250,10 @@ local function parse_link(raw, add_mode, add_from)
 				list = node_list
 			}
 		end
-		log('成功解析【' .. add_from .. '】节点数量: ' .. #node_list)
+		log('Successfully parsed [' .. add_from .. '] node number: ' .. #node_list)
 	else
 		if add_mode == "2" then
-			log('获取到的【' .. add_from .. '】订阅内容为空，可能是订阅地址失效，或是网络问题，请请检测。')
+			log('The [' .. add_from .. '] subscription content obtained is empty. It may be that the subscription address is invalid or there is a network problem. Please check it.')
 		end
 	end
 end
@@ -1323,14 +1317,8 @@ local execute = function()
 			if hysteria2_type ~= "global" then
 				hysteria2_type_default = hysteria2_type
 			end
-			local domain_strategy = value.domain_strategy or "global"
-			if domain_strategy ~= "global" then
-				domain_strategy_node = domain_strategy
-			else
-				domain_strategy_node = domain_strategy_default
-			end
 			local ua = value.user_agent
-			log('正在订阅:【' .. remark .. '】' .. url)
+			log('Subscribing:【' .. remark .. '】' .. url)
 			local raw = curl(url, "/tmp/" .. cfgid, ua)
 			if raw == 0 then
 				local f = io.open("/tmp/" .. cfgid, "r")
@@ -1355,7 +1343,7 @@ local execute = function()
 
 		if #fail_list > 0 then
 			for index, value in ipairs(fail_list) do
-				log(string.format('【%s】订阅失败，可能是订阅地址失效，或是网络问题，请诊断！', value.remark))
+				log(string.format('[%s] Subscription failed, maybe the subscription address is invalid, or there is a network problem, please diagnose!', value.remark))
 			end
 		end
 		update_node(0)
@@ -1364,13 +1352,13 @@ end
 
 if arg[1] then
 	if arg[1] == "start" then
-		log('开始订阅...')
+		log('Start subscribing...')
 		xpcall(execute, function(e)
 			log(e)
 			log(debug.traceback())
-			log('发生错误, 正在恢复服务')
+			log('An error occurred, service is being restored')
 		end)
-		log('订阅完毕...')
+		log('Subscription completed...')
 	elseif arg[1] == "add" then
 		local f = assert(io.open("/tmp/links.conf", 'r'))
 		local content = f:read('*all')
