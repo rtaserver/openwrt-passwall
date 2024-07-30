@@ -9,7 +9,6 @@ local has_chnlist = api.fs.access("/usr/share/passwall/rules/chnlist")
 local has_chnroute = api.fs.access("/usr/share/passwall/rules/chnroute")
 
 m = Map(appname)
-api.set_apply_on_parse(m)
 
 local nodes_table = {}
 for k, e in ipairs(api.get_valid_nodes()) do
@@ -74,7 +73,7 @@ local doh_validate = function(self, value, t)
 		for i = 1, #val do
 			local v = val[i]
 			if v then
-				if not datatypes.ipmask4(v) then
+				if not datatypes.ipmask4(v) and not datatypes.ipmask6(v) then
 					flag = 1
 				end
 			end
@@ -84,6 +83,35 @@ local doh_validate = function(self, value, t)
 		end
 	end
 	return nil, translate("DoH request address") .. " " .. translate("Format must be:") .. " URL,IP"
+end
+
+local chinadns_dot_validate = function(self, value, t)
+	if value ~= "" then
+		value = api.trim(value)
+		-- Define patterns for IPv4, IPv6, domain, and port
+		local ipv4_pattern = "(%d+%.%d+%.%d+%.%d+)"
+		local ipv6_pattern = "([%[%]a-fA-F0-9:]+)"  -- IPv6 addresses are wrapped in []
+		local domain_pattern = "([%w-_%.]+)"
+		local port_pattern = "(%d+)"
+		-- Define patterns for the different formats
+		local patterns = {
+		"^tls://" .. domain_pattern .. "@" .. ipv4_pattern .. "#" .. port_pattern .. "$", -- tls://域名@ip#端口
+		"^tls://" .. ipv4_pattern .. "#" .. port_pattern .. "$",                          -- tls://ip#端口
+		"^tls://" .. domain_pattern .. "@" .. ipv4_pattern .. "$",                        -- tls://域名@ip
+		"^tls://" .. ipv4_pattern .. "$",                                                 -- tls://ip
+		"^tls://" .. domain_pattern .. "@" .. ipv6_pattern .. "#" .. port_pattern .. "$", -- tls://域名@[IPv6]#端口
+		"^tls://" .. ipv6_pattern .. "#" .. port_pattern .. "$",                          -- tls://[IPv6]#端口
+		"^tls://" .. domain_pattern .. "@" .. ipv6_pattern .. "$",                        -- tls://域名@[IPv6]
+		"^tls://" .. ipv6_pattern .. "$"                                                  -- tls://[IPv6]
+		}
+		-- Check if the string matches any of the patterns
+		for _, pattern in ipairs(patterns) do
+			if value:match(pattern) then
+				return value
+			end
+		end
+		return nil, translate("Direct DNS") .. " DoT " .. translate("Format must be:") .. " tls://Domain@IP(#Port) or tls://IP(#Port)"
+	end
 end
 
 m:append(Template(appname .. "/global/status"))
@@ -267,6 +295,48 @@ dns_shunt = s:taboption("DNS", ListValue, "dns_shunt", "DNS " .. translate("Shun
 dns_shunt:value("dnsmasq", "Dnsmasq")
 dns_shunt:value("chinadns-ng", "Dnsmasq + ChinaDNS-NG")
 
+o = s:taboption("DNS", ListValue, "direct_dns_mode", translate("Direct DNS") .. " " .. translate("Request protocol"))
+o.default = ""
+o:value("", translate("Auto"))
+o:value("udp", "UDP")
+o:value("tcp", "TCP")
+if os.execute("chinadns-ng -V | grep -i wolfssl >/dev/null") == 0 then
+	o:value("dot", "DoT")
+end
+--TO DO
+--o:value("doh", "DoH")
+o:depends({dns_shunt = "dnsmasq"})
+o:depends({dns_shunt = "chinadns-ng"})
+
+o = s:taboption("DNS", Value, "direct_dns_udp", translate("Direct DNS"))
+o.datatype = "or(ipaddr,ipaddrport)"
+o.default = "223.5.5.5"
+o:value("223.5.5.5")
+o:value("223.6.6.6")
+o:value("119.29.29.29")
+o:value("180.184.1.1")
+o:value("180.184.2.2")
+o:value("114.114.114.114")
+o:depends("direct_dns_mode", "udp")
+
+o = s:taboption("DNS", Value, "direct_dns_tcp", translate("Direct DNS"))
+o.datatype = "or(ipaddr,ipaddrport)"
+o.default = "223.5.5.5"
+o:value("223.5.5.5")
+o:value("223.6.6.6")
+o:value("180.184.1.1")
+o:value("180.184.2.2")
+o:depends("direct_dns_mode", "tcp")
+
+o = s:taboption("DNS", Value, "direct_dns_dot", translate("Direct DNS"))
+o.default = "tls://dot.pub@1.12.12.12"
+o:value("tls://dot.pub@1.12.12.12")
+o:value("tls://dot.pub@120.53.53.53")
+o:value("tls://dot.360.cn@36.99.170.86")
+o:value("tls://dot.360.cn@101.198.191.4")
+o.validate = chinadns_dot_validate
+o:depends("direct_dns_mode", "dot")
+
 o = s:taboption("DNS", Flag, "filter_proxy_ipv6", translate("Filter Proxy Host IPv6"), translate("Experimental feature."))
 o.default = "0"
 
@@ -379,16 +449,21 @@ o.validate = function(self, value, t)
 	return value
 end
 
-o = s:taboption("DNS", ListValue, "chinadns_ng_default_tag", translate("ChinaDNS-NG Domain Default Tag"))
+o = s:taboption("DNS", ListValue, "chinadns_ng_default_tag", translate("Default DNS"))
 o.default = "none"
-o:value("none", translate("Default"))
 o:value("gfw", translate("Remote DNS"))
 o:value("chn", translate("Direct DNS"))
-o.description = "<ul>"
+o:value("none", translate("Smart, Do not accept no-ip reply from Direct DNS"))
+o:value("none_noip", translate("Smart, Accept no-ip reply from Direct DNS"))
+local desc = "<ul>"
 		.. "<li>" .. translate("When not matching any domain name list:") .. "</li>"
-		.. "<li>" .. translate("Default: Forward to both direct and remote DNS, if the direct DNS resolution result is a mainland China ip, then use the direct result, otherwise use the remote result.") .. "</li>"
 		.. "<li>" .. translate("Remote DNS: Can avoid more DNS leaks, but some domestic domain names maybe to proxy!") .. "</li>"
 		.. "<li>" .. translate("Direct DNS: Internet experience may be better, but DNS will be leaked!") .. "</li>"
+o.description = desc
+		.. "<li>" .. translate("Smart: Forward to both direct and remote DNS, if the direct DNS resolution result is a mainland China IP, then use the direct result, otherwise use the remote result.") .. "</li>"
+		.. "<li>" .. translate("In smart mode, no-ip reply from Direct DNS:") .. "</li>"
+		.. "<li>" .. translate("Do not accept: Wait and use Remote DNS Reply.") .. "</li>"
+		.. "<li>" .. translate("Accept: Trust the Reply, using this option can improve DNS resolution speeds for some mainland IPv4-only sites.") .. "</li>"
 		.. "</ul>"
 o:depends({dns_shunt = "chinadns-ng", tcp_proxy_mode = "proxy", chn_list = "direct"})
 
@@ -396,14 +471,17 @@ o = s:taboption("DNS", ListValue, "use_default_dns", translate("Default DNS"))
 o.default = "direct"
 o:value("remote", translate("Remote DNS"))
 o:value("direct", translate("Direct DNS"))
-o.description = "<ul>"
-		.. "<li>" .. translate("When not matching any domain name list:") .. "</li>"
-		.. "<li>" .. translate("Remote DNS: Can avoid more DNS leaks, but some domestic domain names maybe to proxy!") .. "</li>"
-		.. "<li>" .. translate("Direct DNS: Internet experience may be better, but DNS will be leaked!") .. "</li>"
-		.. "</ul>"
+o.description = desc .. "</ul>"
 o:depends({dns_shunt = "dnsmasq", tcp_proxy_mode = "proxy", chn_list = "direct"})
 
-o = s:taboption("DNS", Button, "clear_ipset", translate("Clear IPSET"), translate("Try this feature if the rule modification does not take effect."))
+o = s:taboption("DNS", Flag, "dns_redirect", "DNS " .. translate("Redirect"), translate("Force Router DNS server to all local devices."))
+o.default = "0"
+
+if (uci:get(appname, "@global_forwarding[0]", "use_nft") or "0") == "1" then
+	o = s:taboption("DNS", Button, "clear_ipset", translate("Clear NFTSET"), translate("Try this feature if the rule modification does not take effect."))
+else
+	o = s:taboption("DNS", Button, "clear_ipset", translate("Clear IPSET"), translate("Try this feature if the rule modification does not take effect."))
+end
 o.inputstyle = "remove"
 function o.write(e, e)
 	luci.sys.call('[ -n "$(nft list sets 2>/dev/null | grep \"passwall_\")" ] && sh /usr/share/passwall/nftables.sh flush_nftset_reload || sh /usr/share/passwall/iptables.sh flush_ipset_reload > /dev/null 2>&1 &')

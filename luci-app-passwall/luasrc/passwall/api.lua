@@ -14,6 +14,7 @@ curl_args = { "-skfL", "--connect-timeout 3", "--retry 3" }
 command_timeout = 300
 OPENWRT_ARCH = nil
 DISTRIB_ARCH = nil
+OPENWRT_BOARD = nil
 
 LOG_FILE = "/tmp/log/" .. appname .. ".log"
 CACHE_PATH = "/tmp/etc/" .. appname .. "_tmp"
@@ -620,7 +621,9 @@ local function auto_get_arch()
 	local arch = nixio.uname().machine or ""
 	if not OPENWRT_ARCH and fs.access("/usr/lib/os-release") then
 		OPENWRT_ARCH = sys.exec("echo -n $(grep 'OPENWRT_ARCH' /usr/lib/os-release | awk -F '[\\042\\047]' '{print $2}')")
+		OPENWRT_BOARD = sys.exec("echo -n $(grep 'OPENWRT_BOARD' /usr/lib/os-release | awk -F '[\\042\\047]' '{print $2}')")
 		if OPENWRT_ARCH == "" then OPENWRT_ARCH = nil end
+		if OPENWRT_BOARD == "" then OPENWRT_BOARD = nil end
 	end
 	if not DISTRIB_ARCH and fs.access("/etc/openwrt_release") then
 		DISTRIB_ARCH = sys.exec("echo -n $(grep 'DISTRIB_ARCH' /etc/openwrt_release | awk -F '[\\042\\047]' '{print $2}')")
@@ -649,6 +652,10 @@ local function auto_get_arch()
 				arch = "armv5"
 			end
 		end
+	end
+
+	if arch == "aarch64" and OPENWRT_BOARD and OPENWRT_BOARD:match("rockchip") ~= nil then
+		arch = "rockchip"
 	end
 
 	return util.trim(arch)
@@ -696,8 +703,9 @@ local default_file_tree = {
 	x86_64  = "amd64",
 	x86     = "386",
 	aarch64 = "arm64",
+	rockchip = "arm64",
 	mips    = "mips",
-	mipsel  = "mipsle",
+	mipsel  = "mipsel",
 	armv5   = "arm.*5",
 	armv6   = "arm.*6[^4]*",
 	armv7   = "arm.*7",
@@ -997,22 +1005,6 @@ function to_check_self()
 		remote_version = remote_version,
 		error = i18n.translatef("The latest version: %s, currently does not support automatic update, if you need to update, please compile or download the ipk and then manually install.", remote_version)
 	}
-end
-
-function is_js_luci()
-	return sys.call('[ -f "/www/luci-static/resources/uci.js" ]') == 0
-end
-
-function set_apply_on_parse(map)
-	if is_js_luci() == true then
-		map.apply_on_parse = false
-		map.on_after_apply = function(self)
-			if self.redirect then
-				os.execute("sleep 1")
-				luci.http.redirect(self.redirect)
-			end
-		end
-	end
 end
 
 function luci_types(id, m, s, type_name, option_prefix)

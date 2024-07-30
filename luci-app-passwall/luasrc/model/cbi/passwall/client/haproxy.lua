@@ -16,7 +16,6 @@ for k, e in ipairs(api.get_valid_nodes()) do
 end
 
 m = Map(appname)
-api.set_apply_on_parse(m)
 
 -- [[ Haproxy Settings ]]--
 s = m:section(TypedSection, "global_haproxy")
@@ -48,6 +47,7 @@ o:depends("balancing_enable", true)
 
 o = s:option(Flag, "bind_local", translate("Haproxy Port") .. " " .. translate("Bind Local"), translate("When selected, it can only be accessed localhost."))
 o.default = "0"
+o:depends("balancing_enable", true)
 
 ---- Health Check Type
 o = s:option(ListValue, "health_check_type", translate("Health Check Type"))
